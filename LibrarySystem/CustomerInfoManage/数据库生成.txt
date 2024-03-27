@@ -1,0 +1,13 @@
+use db_case0705;
+
+create table customer_info(
+	CustomerID			int primary key auto_increment,
+    CustomerName		varchar(20),
+    Company				varchar(50),
+    Sex					varchar(2),
+    Age					int,
+    Telephone			varchar(20),
+    address				varchar(200)
+);
+
+insert into customer_info values(1, 'kk', 'kk传媒', '女', 17, '13956784160', 'kk省kk市kk村');
