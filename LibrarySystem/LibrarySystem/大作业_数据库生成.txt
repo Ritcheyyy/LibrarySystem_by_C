@@ -1,0 +1,268 @@
+use library_db;
+
+drop table if exists Administrator_Info;
+
+drop table if exists BookLost_Info;
+
+drop table if exists Book_Info;
+
+drop table if exists Borrow_Info;
+
+drop table if exists LatePenalty_Info;
+
+drop table if exists LibraryCollection_Info;
+
+drop table if exists Publisher_Info;
+
+drop table if exists ReaderClass_Info;
+
+drop table if exists Reader_Info;
+
+drop table if exists Return_Info;
+
+/*==============================================================*/
+/* Table: Administrator_Info                                    */
+/*==============================================================*/
+create table Administrator_Info
+(
+   AID                  int not null auto_increment,
+   APwd					varchar(30),
+   AName                varchar(15),
+   Sex                  int,
+   APhone               varchar(30),
+   APosition            varchar(15),
+   primary key (AID)
+);
+
+/*==============================================================*/
+/* Table: BookLost_Info                                         */
+/*==============================================================*/
+create table BookLost_Info
+(
+   LID                  int not null auto_increment,
+   BRID                 int,
+   RID                  int,
+   PAmount              float,
+   OperateTime          date,
+   Submit               int,
+   AID                  int,
+   Remark               text,
+   primary key (LID)
+);
+
+/*==============================================================*/
+/* Table: Book_Info                                             */
+/*==============================================================*/
+create table Book_Info
+(
+   ISBN                 int not null,
+   BName                varchar(15),
+   BAuthor              varchar(15),
+   PID                  int,
+   PublishNum           int,
+   PublishDate          date,
+   Price                float,
+   BriefIntroduction    text,
+   CurrNum              int,
+   TotalNum             int,
+   primary key (ISBN)
+);
+
+/*==============================================================*/
+/* Table: Borrow_Info                                           */
+/*==============================================================*/
+create table Borrow_Info
+(
+   BRID                 int not null auto_increment,
+   BID                  int,
+   RID                  int,
+   BRTime               date,
+   RTExpectTime         date,
+   RenewalNum           int,
+   AID                  int,
+   primary key (BRID)
+);
+
+/*==============================================================*/
+/* Table: LatePenalty_Info                                      */
+/*==============================================================*/
+create table LatePenalty_Info
+(
+   PID                  int not null auto_increment,
+   BRID                 int,
+   PAmount              float,
+   Submit               int,
+   PDate                date,
+   AID                  int,
+   Remark               text,
+   primary key (PID)
+);
+
+/*==============================================================*/
+/* Table: LibraryCollection_Info                                */
+/*==============================================================*/
+create table LibraryCollection_Info
+(
+   BID                  int not null auto_increment,
+   ISBN                 int,
+   InboundTime          date,
+   BState               int,
+   primary key (BID)
+);
+
+/*==============================================================*/
+/* Table: Publisher_Info                                        */
+/*==============================================================*/
+create table Publisher_Info
+(
+   PID                  int not null auto_increment,
+   PName                varchar(30),
+   Contact              varchar(15),
+   Phone                varchar(30),
+   PFax                 text,
+   Province             varchar(15),
+   City                 varchar(15),
+   Street               varchar(15),
+   DetailAddress        varchar(15),
+   primary key (PID)
+);
+
+/*==============================================================*/
+/* Table: ReaderClass_Info                                      */
+/*==============================================================*/
+create table ReaderClass_Info
+(
+   RCID                 int not null auto_increment,
+   RCName               varchar(30),
+   RCNum                int,
+   RCDay                int,
+   primary key (RCID)
+);
+
+/*==============================================================*/
+/* Table: Reader_Info                                           */
+/*==============================================================*/
+create table Reader_Info
+(
+   RID                  int not null auto_increment,
+   RCID                 int,
+   RPwd                	varchar(30),
+   RName                varchar(15),
+   Sex                  int,
+   Phone                varchar(30),
+   RegisterDate         date,
+   ValidDate            date,
+   CurrentBookNum       int,
+   TotalBookNum         int,
+   Lost                 int,
+   ViolationNum         int,
+   Remark               text,
+   primary key (RID)
+);
+
+/*==============================================================*/
+/* Table: Return_Info                                           */
+/*==============================================================*/
+create table Return_Info
+(
+   RTID                 int not null auto_increment,
+   BID                  int,
+   RID                  int,
+   RTTime               date,
+   Late                 int,
+   Broken               int,
+   AID                  int,
+   primary key (RTID)
+);
+
+alter table BookLost_Info add constraint FK_Reference_12 foreign key (BRID)
+      references Borrow_Info (BRID) on delete restrict on update restrict;
+
+alter table BookLost_Info add constraint FK_Reference_13 foreign key (RID)
+      references Reader_Info (RID) on delete restrict on update restrict;
+
+alter table BookLost_Info add constraint FK_Reference_14 foreign key (AID)
+      references Administrator_Info (AID) on delete restrict on update restrict;
+
+alter table Book_Info add constraint FK_Reference_2 foreign key (PID)
+      references Publisher_Info (PID) on delete restrict on update restrict;
+
+alter table Borrow_Info add constraint FK_Reference_4 foreign key (RID)
+      references Reader_Info (RID) on delete restrict on update restrict;
+
+alter table Borrow_Info add constraint FK_Reference_5 foreign key (AID)
+      references Administrator_Info (AID) on delete restrict on update restrict;
+
+alter table Borrow_Info add constraint FK_Reference_6 foreign key (BID)
+      references LibraryCollection_Info (BID) on delete restrict on update restrict;
+
+alter table LatePenalty_Info add constraint FK_Reference_10 foreign key (BRID)
+      references Borrow_Info (BRID) on delete restrict on update restrict;
+
+alter table LatePenalty_Info add constraint FK_Reference_11 foreign key (AID)
+      references Administrator_Info (AID) on delete restrict on update restrict;
+
+alter table LibraryCollection_Info add constraint FK_Reference_3 foreign key (ISBN)
+      references Book_Info (ISBN) on delete restrict on update restrict;
+
+alter table Reader_Info add constraint FK_Reference_1 foreign key (RCID)
+      references ReaderClass_Info (RCID) on delete restrict on update restrict;
+
+alter table Return_Info add constraint FK_Reference_7 foreign key (BID)
+      references LibraryCollection_Info (BID) on delete restrict on update restrict;
+
+alter table Return_Info add constraint FK_Reference_8 foreign key (RID)
+      references Reader_Info (RID) on delete restrict on update restrict;
+
+alter table Return_Info add constraint FK_Reference_9 foreign key (AID)
+      references Administrator_Info (AID) on delete restrict on update restrict;
+
+-- 插入数据
+insert into readerclass_info values(1, '学生', 10, 30);
+insert into readerclass_info values(2, '教师', 15, 60);
+-- delete from readerclass_info where rcid = 3;
+
+-- alter table reader_info add column password varchar(30);
+insert into reader_info values(1, 1, 1, '陈东', 1, null, null, null, 0, 0, 0, 0, null);
+insert into reader_info values(2, 1, 2, '叶楚琪', 2, null, null, null, 0, 0, 0, 0, null);
+insert into reader_info values(3, 2, 3, '马东', 1, null, null, null, 0, 0, 0, 0, null);
+insert into reader_info values(4, 2, 4, '陈舒婷', 2, null, null, null, 0, 0, 0, 0, null);
+insert into reader_info values(5, 2, 5, '郭浩', 1, null, null, null, 0, 0, 0, 0, null);
+
+insert into Administrator_Info values(1, 1, '尹赵航', 1, null, null);
+insert into Administrator_Info values(2, 2, '赵婷', 2, null, null);
+
+insert into Publisher_Info values();
+
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('9787-1', '9787', '2013-02-05', '1');
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('9787-2', '9787', '2013-02-05', '1');
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('9787-3', '9787', '2013-02-05', '1');
+
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('9788-1', '9788', '2013-02-05', '1');
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('9788-2', '9788', '2013-02-05', '1');
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('9788-3', '9788', '2013-02-05', '1');
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('9788-4', '9788', '2013-02-05', '1');
+
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('8161-1', '8161', '2016-02-05', '1');
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('8161-2', '8161', '2016-02-05', '1');
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('8161-3', '8161', '2016-02-05', '1');
+
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('8716-1', '8716', '2016-02-05', '1');
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('8716-2', '8716', '2016-02-05', '1');
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('8716-3', '8716', '2016-02-05', '1');
+
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('9187-1', '9187', '2003-02-05', '1');
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('9187-2', '9187', '2003-02-05', '1');
+
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('6488-1', '6488', '2003-02-05', '1');
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('6488-2', '6488', '2003-02-05', '1');
+
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('2161-1', '2161', '2006-02-05', '1');
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('2161-2', '2161', '2006-02-05', '1');
+
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('2616-1', '2616', '2006-02-05', '1');
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('2616-2', '2616', '2006-02-05', '1');
+INSERT INTO `library_db`.`librarycollection_info` (`BID`, `ISBN`, `InboundTime`, `BState`) VALUES ('2616-3', '2616', '2006-02-05', '1');
+
+
+insert into borrow_info(`BID`, `RID`, `BRTime`, `RTExpectTime`, `RenewalNum`) values(9787-1,1,'2024-01-01','2024-06-01',0);
